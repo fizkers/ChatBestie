@@ -9,7 +9,7 @@
         :root {
             --primary: #00ff88;
             --bg: #0d1117;
-            --card: rgba(22, 27, 34, 0.9);
+            --card: rgba(22, 27, 34, 0.95);
             --text: #c9d1d9;
         }
 
@@ -23,9 +23,10 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            /* Perbaikan sentuhan di iOS */
+            touch-action: manipulation;
         }
 
-        /* Responsive Overlay */
         #name-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 99; display: flex; justify-content: center; align-items: center; 
@@ -54,9 +55,9 @@
             outline: none;
             box-sizing: border-box;
             text-align: center;
+            font-size: 16px; /* Mencegah auto-zoom iOS */
         }
 
-        /* Chat Container Responsive */
         #chat-container {
             width: 100%;
             height: 100%;
@@ -66,7 +67,6 @@
             overflow: hidden;
         }
 
-        /* Desktop View Refinement */
         @media (min-width: 768px) {
             #chat-container {
                 width: 95%;
@@ -78,7 +78,7 @@
         }
 
         #chat-header {
-            padding: 12px 20px;
+            padding: 15px 20px;
             background: rgba(0,0,0,0.3);
             border-bottom: 1px solid #30363d;
             display: flex;
@@ -93,9 +93,10 @@
             overflow-y: auto; 
             display: flex; 
             flex-direction: column;
+            /* Scroll smooth di mobile */
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* Message Bubble Responsive */
         .message {
             background: rgba(255,255,255,0.03);
             margin-bottom: 10px;
@@ -103,23 +104,23 @@
             border-radius: 8px;
             border-left: 3px solid var(--primary);
             font-size: 14px;
-            word-break: break-word; /* Mencegah teks meluap di HP */
+            word-break: break-word;
             animation: slideIn 0.3s ease;
         }
 
         @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Input Area Responsive */
         #input-area { 
             padding: 15px; 
             background: rgba(0,0,0,0.4); 
-            padding-bottom: env(safe-area-inset-bottom); /* Dukungan iPhone Notch */
+            /* Menangani notch iPhone */
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
         }
 
         .input-wrapper {
             display: flex;
             background: #0d1117;
-            padding: 8px 15px;
+            padding: 5px 15px;
             border-radius: 25px;
             border: 1px solid #30363d;
             align-items: center;
@@ -130,10 +131,10 @@
             border: none; 
             color: white;
             flex: 1; 
-            padding: 8px; 
+            padding: 10px 5px; 
             outline: none;
             font-family: inherit;
-            font-size: 16px; /* Mencegah auto-zoom di iOS */
+            font-size: 16px;
         }
 
         .glow-button {
@@ -147,7 +148,7 @@
             width: 100%;
         }
 
-        .time { color: var(--primary); font-size: 0.75em; opacity: 0.7; }
+        .time { color: var(--primary); font-size: 0.75em; opacity: 0.7; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -168,9 +169,9 @@
         <div id="chat-box"></div>
         <div id="input-area">
             <div class="input-wrapper">
-                <span id="current-user" style="color: var(--primary); font-size: 12px; margin-right: 5px;"></span>
+                <span id="current-user" style="color: var(--primary); font-size: 12px; margin-right: 5px; white-space: nowrap;"></span>
                 <input type="text" id="messageInput" placeholder="Ketik pesan..." autocomplete="off">
-                <button onclick="sendMessage()" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:20px;">➤</button>
+                <button onclick="sendMessage()" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:20px; padding: 5px;">➤</button>
             </div>
         </div>
     </div>
@@ -196,8 +197,8 @@
         function saveName() {
             const input = document.getElementById("usernameInput").value;
             if (input.trim() !== "") {
-                localStorage.setItem("chatbestie_user", input);
-                myName = input;
+                localStorage.setItem("chatbestie_user", input.trim());
+                myName = input.trim();
                 jalankanAplikasi();
             }
         }
@@ -217,16 +218,21 @@
                     jam: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                 });
                 msgInput.value = "";
+                msgInput.focus();
             }
         }
 
-        database.ref("messages").on("child_added", (snapshot) => {
-            const data = snapshot.val();
+        // Perbaikan: Menggunakan 'value' untuk sinkronisasi pesan yang lebih baik di semua HP
+        database.ref("messages").on("value", (snapshot) => {
             const chatBox = document.getElementById("chat-box");
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "message";
-            msgDiv.innerHTML = `<span class="time">[${data.jam}]</span> <strong>${data.sender}</strong>: ${data.message}`;
-            chatBox.appendChild(msgDiv);
+            chatBox.innerHTML = ""; 
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                const msgDiv = document.createElement("div");
+                msgDiv.className = "message";
+                msgDiv.innerHTML = `<span class="time">[${data.jam}]</span> <strong>${data.sender}</strong>: ${data.message}`;
+                chatBox.appendChild(msgDiv);
+            });
             chatBox.scrollTop = chatBox.scrollHeight;
         });
 
