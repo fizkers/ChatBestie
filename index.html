@@ -23,7 +23,6 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            /* Perbaikan sentuhan di iOS */
             touch-action: manipulation;
         }
 
@@ -55,7 +54,7 @@
             outline: none;
             box-sizing: border-box;
             text-align: center;
-            font-size: 16px; /* Mencegah auto-zoom iOS */
+            font-size: 16px;
         }
 
         #chat-container {
@@ -93,7 +92,6 @@
             overflow-y: auto; 
             display: flex; 
             flex-direction: column;
-            /* Scroll smooth di mobile */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -113,7 +111,6 @@
         #input-area { 
             padding: 15px; 
             background: rgba(0,0,0,0.4); 
-            /* Menangani notch iPhone */
             padding-bottom: calc(15px + env(safe-area-inset-bottom));
         }
 
@@ -182,6 +179,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyDsnfwqmcAbe1vcEWEvgJth9GJWGKSecqk",
             authDomain: "chatbestie-44728.firebaseapp.com",
+            databaseURL: "https://chatbestie-44728-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "chatbestie-44728",
             storageBucket: "chatbestie-44728.firebasestorage.app",
             messagingSenderId: "764625669025",
@@ -222,7 +220,6 @@
             }
         }
 
-        // Perbaikan: Menggunakan 'value' untuk sinkronisasi pesan yang lebih baik di semua HP
         database.ref("messages").on("value", (snapshot) => {
             const chatBox = document.getElementById("chat-box");
             chatBox.innerHTML = ""; 
