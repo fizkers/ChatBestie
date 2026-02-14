@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChatBestie Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --bg: #0d1117;
+            --card: rgba(22, 27, 34, 0.9);
+            --text: #c9d1d9;
+        }
+
+        body { 
+            background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
+            color: var(--text);
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Responsive Overlay */
+        #name-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 99; display: flex; justify-content: center; align-items: center; 
+        }
+
+        .glass-card {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 85%;
+            max-width: 350px;
+        }
+
+        .modern-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            color: var(--primary);
+            padding: 12px;
+            width: 100%;
+            margin: 20px 0;
+            outline: none;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Chat Container Responsive */
+        #chat-container {
+            width: 100%;
+            height: 100%;
+            background: var(--card);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Desktop View Refinement */
+        @media (min-width: 768px) {
+            #chat-container {
+                width: 95%;
+                max-width: 800px;
+                height: 85vh;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+            }
+        }
+
+        #chat-header {
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        #chat-box { 
+            flex: 1; 
+            padding: 15px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* Message Bubble Responsive */
+        .message {
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+            font-size: 14px;
+            word-break: break-word; /* Mencegah teks meluap di HP */
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Input Area Responsive */
+        #input-area { 
+            padding: 15px; 
+            background: rgba(0,0,0,0.4); 
+            padding-bottom: env(safe-area-inset-bottom); /* Dukungan iPhone Notch */
+        }
+
+        .input-wrapper {
+            display: flex;
+            background: #0d1117;
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 1px solid #30363d;
+            align-items: center;
+        }
+
+        #input-area input {
+            background: none; 
+            border: none; 
+            color: white;
+            flex: 1; 
+            padding: 8px; 
+            outline: none;
+            font-family: inherit;
+            font-size: 16px; /* Mencegah auto-zoom di iOS */
+        }
+
+        .glow-button {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .time { color: var(--primary); font-size: 0.75em; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div id="name-overlay">
+        <div class="glass-card">
+            <h3>// INITIALIZE</h3>
+            <p style="font-size: 12px;">Masukkan nama untuk login:</p>
+            <input type="text" id="usernameInput" class="modern-input" placeholder="Nama..." autofocus>
+            <button onclick="saveName()" class="glow-button">ENTER_SYSTEM</button>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-header">
+            <span>CHATBESTIE_V2.0</span>
+            <span style="color: var(--primary);">● ONLINE</span>
+        </div>
+        <div id="chat-box"></div>
+        <div id="input-area">
+            <div class="input-wrapper">
+                <span id="current-user" style="color: var(--primary); font-size: 12px; margin-right: 5px;"></span>
+                <input type="text" id="messageInput" placeholder="Ketik pesan..." autocomplete="off">
+                <button onclick="sendMessage()" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:20px;">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsnfwqmcAbe1vcEWEvgJth9GJWGKSecqk",
+            authDomain: "chatbestie-44728.firebaseapp.com",
+            projectId: "chatbestie-44728",
+            storageBucket: "chatbestie-44728.firebasestorage.app",
+            messagingSenderId: "764625669025",
+            appId: "1:764625669025:web:1312271b63b748c5d9d9e0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let myName = localStorage.getItem("chatbestie_user");
+        if (myName) { jalankanAplikasi(); }
+
+        function saveName() {
+            const input = document.getElementById("usernameInput").value;
+            if (input.trim() !== "") {
+                localStorage.setItem("chatbestie_user", input);
+                myName = input;
+                jalankanAplikasi();
+            }
+        }
+
+        function jalankanAplikasi() {
+            document.getElementById("name-overlay").style.display = "none";
+            document.getElementById("chat-container").style.display = "flex";
+            document.getElementById("current-user").innerText = myName + ">";
+        }
+
+        function sendMessage() {
+            const msgInput = document.getElementById("messageInput");
+            if (msgInput.value.trim() !== "") {
+                database.ref("messages").push().set({
+                    sender: myName,
+                    message: msgInput.value,
+                    jam: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                msgInput.value = "";
+            }
+        }
+
+        database.ref("messages").on("child_added", (snapshot) => {
+            const data = snapshot.val();
+            const chatBox = document.getElementById("chat-box");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "message";
+            msgDiv.innerHTML = `<span class="time">[${data.jam}]</span> <strong>${data.sender}</strong>: ${data.message}`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        document.getElementById("messageInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
