@@ -3,137 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChatBestie Final</title>
+    <title>ChatBestie V.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background-color: #0d1117; 
-            color: #c9d1d9; 
-            font-family: 'Fira Code', monospace; 
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; height: 100vh;
-            overflow: hidden;
-        }
-
-        /* HEADER */
-        header { 
-            padding: 10px 15px; 
-            border-bottom: 1px solid #30363d; 
-            font-size: 11px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            background: rgba(0,0,0,0.2);
-        }
-
-        /* CHAT AREA */
-        #chat-box { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 15px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px;
-        }
-
-        /* PESAN KANAN KIRI SESUAI FOTO */
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Fira Code', monospace; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { padding: 15px; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); }
+        .brand { font-weight: bold; color: #00ff88; letter-spacing: 2px; font-size: 14px; }
+        .stats { font-size: 9px; opacity: 0.8; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .system-notif { align-self: center; font-size: 10px; color: #58a6ff; background: rgba(88, 166, 255, 0.1); padding: 4px 12px; border-radius: 10px; margin: 5px 0; border: 1px dashed #58a6ff; }
         .msg-line { display: flex; width: 100%; }
-        
-        /* Pesan Teman (Kiri) */
         .left { justify-content: flex-start; }
         .left .content { border-left: 2px solid #00ff88; padding-left: 10px; }
-
-        /* Pesan Kamu (Kanan) */
         .right { justify-content: flex-end; text-align: right; }
         .right .content { border-right: 2px solid #00ff88; padding-right: 10px; }
-
         .time { color: #00ff88; font-size: 0.8em; opacity: 0.7; }
         .sender { font-weight: bold; color: #fff; margin: 0 5px; }
-
-        /* EMOJI BAR */
-        #emoji-row { 
-            padding: 10px 15px; 
-            background: #161b22; 
-            border-top: 1px solid #30363d; 
-            display: flex; 
-            gap: 20px;
-            justify-content: flex-start;
-        }
-        .emoji-item { cursor: pointer; font-size: 22px; transition: 0.1s; }
-        .emoji-item:active { transform: scale(1.3); }
-
-        /* INPUT AREA */
-        #input-area { 
-            padding: 15px; 
-            background: #0d1117; 
-            display: flex; 
-            gap: 10px; 
-            border-top: 1px solid #30363d; 
-            padding-bottom: calc(15px + env(safe-area-inset-bottom));
-        }
-        input { 
-            background: #161b22; 
-            border: 1px solid #30363d; 
-            color: white; 
-            flex: 1; 
-            padding: 12px; 
-            font-family: inherit; 
-            outline: none; 
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button { background: none; border: none; color: #00ff88; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 16px; }
-
-        /* LOGIN SCREEN */
-        #login { 
-            position: fixed; inset: 0; 
-            background: #0d1117; 
-            z-index: 100; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-        .login-card { text-align: center; border: 1px solid #00ff88; padding: 40px; border-radius: 10px; background: #161b22; }
+        #emoji-row { padding: 10px 15px; background: #161b22; border-top: 1px solid #30363d; display: flex; gap: 20px; overflow-x: auto; }
+        .emoji-item { cursor: pointer; font-size: 22px; }
+        #input-area { padding: 15px; background: #0d1117; display: flex; gap: 10px; border-top: 1px solid #30363d; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
+        input { background: #161b22; border: 1px solid #30363d; color: white; flex: 1; padding: 12px; font-family: inherit; outline: none; border-radius: 5px; }
+        button { background: none; border: none; color: #00ff88; cursor: pointer; font-family: inherit; font-weight: bold; }
+        #login { position: fixed; inset: 0; background: #0d1117; z-index: 100; display: flex; justify-content: center; align-items: center; }
+        .login-card { text-align: center; border: 1px solid #00ff88; padding: 30px; border-radius: 10px; background: #161b22; }
     </style>
 </head>
 <body>
 
 <div id="login">
     <div class="login-card">
-        <h3 style="color:#00ff88; margin-top:0;">// SECURE_LOGIN</h3>
-        <input type="text" id="u-in" placeholder="Nama Kamu" style="width:200px; margin-bottom:10px;"><br>
-        <input type="password" id="p-in" placeholder="PIN Rahasia" style="width:200px;"><br>
-        <button onclick="auth()" style="border: 1px solid #00ff88; padding: 10px 30px; margin-top: 15px; border-radius: 5px;">ENTER</button>
+        <h2 style="color:#00ff88; margin-top:0;">[CHATBESTIE V.4]</h2>
+        <input type="text" id="u-in" placeholder="User Name"><br><br>
+        <input type="password" id="p-in" placeholder="Access PIN"><br><br>
+        <button onclick="auth()" style="border: 1px solid #00ff88; padding: 10px 30px; border-radius: 5px; width: 100%;">LOGIN</button>
     </div>
 </div>
 
 <header>
-    <span>[CHATBESTIE_V4]</span>
-    <button id="del-btn" onclick="resetDB()" style="display:none; color:#ff4444; border:1px solid #ff4444; padding:2px 8px; border-radius:3px; background:none; cursor:pointer; font-family:inherit;">[HAPUS_SEMUA]</button>
-    <span id="user-tag" style="color:#00ff88"></span>
+    <div class="stats">ONLINE: <span id="online-count" style="color:#00ff88">0</span></div>
+    <div class="brand">[CHATBESTIE V.4]</div>
+    <div>
+        <button id="del-btn" onclick="resetDB()" style="display:none; color:#ff4444; border:1px solid #ff4444; padding:2px 8px; border-radius:3px; background:none; cursor:pointer; font-size: 9px;">PURGE</button>
+        <span id="user-tag" style="color:#00ff88; font-size: 10px;"></span>
+    </div>
 </header>
 
 <div id="chat-box"></div>
 
 <div id="emoji-row">
-    <span class="emoji-item" onclick="addE('😂')">😂</span>
-    <span class="emoji-item" onclick="addE('🤫')">🤫</span>
-    <span class="emoji-item" onclick="addE('🙄')">🙄</span>
-    <span class="emoji-item" onclick="addE('❤️')">❤️</span>
-    <span class="emoji-item" onclick="addE('🗿')">🗿</span>
+    <span class="emoji-item" onclick="addE('😂')">😂</span><span class="emoji-item" onclick="addE('🤫')">🤫</span><span class="emoji-item" onclick="addE('🙄')">🙄</span><span class="emoji-item" onclick="addE('❤️')">❤️</span><span class="emoji-item" onclick="addE('🗿')">🗿</span>
 </div>
 
 <div id="input-area">
-    <input type="text" id="msg-in" placeholder="Ketik pesan ghibah..." autocomplete="off">
+    <input type="text" id="msg-in" placeholder="Ketik pesan..." autocomplete="off">
     <button onclick="send()">SEND></button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
-    // Pastikan Firebase Config ini tetap benar
     const firebaseConfig = {
         apiKey: "AIzaSyDsnfwqmcAbe1vcEWEvgJth9GJWGKSecqk",
         authDomain: "chatbestie-44728.firebaseapp.com",
@@ -155,74 +83,53 @@
         if(p === "TanyoeBersama" && n.trim() !== "") {
             localStorage.setItem("cb_user", n.trim());
             currentUser = n.trim();
+            db.ref("messages").push().set({ sender: "SYSTEM", message: `${currentUser} ENTERED_THE_ROOM`, type: "notif", jam: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
             start();
-        } else { alert("PIN SALAH ATAU NAMA KOSONG!"); }
+        } else { alert("ACCESS_DENIED"); }
     }
 
     function start() {
         document.getElementById('login').style.display = 'none';
         document.getElementById('user-tag').innerText = "@" + currentUser.toUpperCase();
         
-        // Cek Admin untuk tombol Hapus (Ganti 'Hafiz' jika ingin nama lain)
-        const nameLow = currentUser.toLowerCase();
-        if(nameLow === "fizkers" || nameLow === "hafiz") { 
+        // HANYA "MASTER" YANG BISA LIHAT TOMBOL PURGE
+        if(currentUser.toLowerCase() === "master") { 
             document.getElementById('del-btn').style.display = 'inline-block';
         }
-        
-        // Tampilkan Pesan
-        db.ref("messages").on("value", snapshot => {
+
+        const presenceRef = db.ref("presence").child(currentUser);
+        presenceRef.set(true);
+        presenceRef.onDisconnect().remove();
+        db.ref("presence").on("value", snap => { document.getElementById("online-count").innerText = snap.numChildren(); });
+
+        db.ref("messages").on("child_added", snapshot => {
+            const data = snapshot.val();
             const box = document.getElementById('chat-box');
-            box.innerHTML = "";
-            snapshot.forEach(child => {
-                const data = child.val();
+            if (data.type === "notif") {
+                const notifDiv = document.createElement('div');
+                notifDiv.className = "system-notif";
+                notifDiv.innerText = data.message;
+                box.appendChild(notifDiv);
+            } else {
                 const isMe = data.sender.toLowerCase() === currentUser.toLowerCase();
                 const line = document.createElement('div');
                 line.className = `msg-line ${isMe ? 'right' : 'left'}`;
-                
-                line.innerHTML = `
-                    <div class="content">
-                        <span class="time">[${data.jam}]</span>
-                        <span class="sender">${isMe ? 'Kamu' : data.sender}:</span>
-                        <span>${data.message}</span>
-                    </div>
-                `;
+                line.innerHTML = `<div class="content"><span class="time">[${data.jam}]</span> <span class="sender">${isMe ? 'Kamu' : data.sender}:</span> <span>${data.message}</span></div>`;
                 box.appendChild(line);
-            });
+            }
             box.scrollTop = box.scrollHeight;
         });
-
-        // Pembersihan otomatis 7 hari
-        const limit = Date.now() - (7 * 24 * 60 * 60 * 1000);
-        db.ref("messages").once("value", s => {
-            s.forEach(c => { if((c.val().timestamp || 0) < limit) c.ref.remove(); });
-        });
     }
 
-    function addE(e) { 
-        const input = document.getElementById('msg-in');
-        input.value += e;
-        input.focus();
-    }
-
+    function addE(e) { const i = document.getElementById('msg-in'); i.value += e; i.focus(); }
     function send() {
-        const input = document.getElementById('msg-in');
-        if(input.value.trim() !== "" && currentUser) {
-            db.ref("messages").push().set({
-                sender: currentUser,
-                message: input.value,
-                timestamp: Date.now(),
-                jam: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12: true})
-            });
-            input.value = "";
+        const i = document.getElementById('msg-in');
+        if(i.value.trim() !== "") {
+            db.ref("messages").push().set({ sender: currentUser, message: i.value, timestamp: Date.now(), jam: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            i.value = "";
         }
     }
-
-    function resetDB() {
-        if(confirm("PERINGATAN: Hapus semua riwayat chat secara permanen?")) {
-            db.ref("messages").remove();
-        }
-    }
-
+    function resetDB() { if(confirm("Execute PURGE sequence?")) db.ref("messages").remove(); }
     document.getElementById("msg-in").addEventListener("keypress", e => { if(e.key === "Enter") send(); });
 </script>
 </body>
