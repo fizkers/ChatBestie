@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChatBestie</title>
+    <title>ChatBestie Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -12,13 +12,31 @@
             font-family: 'Fira Code', monospace; 
             margin: 0; padding: 0;
             display: flex; flex-direction: column; height: 100vh;
+            overflow: hidden;
         }
 
-        header { padding: 10px; border-bottom: 1px solid #30363d; font-size: 10px; display: flex; justify-content: space-between; }
+        /* HEADER */
+        header { 
+            padding: 10px 15px; 
+            border-bottom: 1px solid #30363d; 
+            font-size: 11px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+        }
 
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        /* CHAT AREA */
+        #chat-box { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px;
+        }
 
-        /* FIX POSISI SESUAI FOTO */
+        /* PESAN KANAN KIRI SESUAI FOTO */
         .msg-line { display: flex; width: 100%; }
         
         /* Pesan Teman (Kiri) */
@@ -29,34 +47,71 @@
         .right { justify-content: flex-end; text-align: right; }
         .right .content { border-right: 2px solid #00ff88; padding-right: 10px; }
 
-        .time { color: #00ff88; font-size: 0.8em; }
+        .time { color: #00ff88; font-size: 0.8em; opacity: 0.7; }
         .sender { font-weight: bold; color: #fff; margin: 0 5px; }
 
         /* EMOJI BAR */
-        #emoji-row { padding: 8px 15px; background: #161b22; border-top: 1px solid #30363d; display: flex; gap: 15px; }
-        .emoji-item { cursor: pointer; font-size: 20px; }
+        #emoji-row { 
+            padding: 10px 15px; 
+            background: #161b22; 
+            border-top: 1px solid #30363d; 
+            display: flex; 
+            gap: 20px;
+            justify-content: flex-start;
+        }
+        .emoji-item { cursor: pointer; font-size: 22px; transition: 0.1s; }
+        .emoji-item:active { transform: scale(1.3); }
 
         /* INPUT AREA */
-        #input-area { padding: 15px; background: #0d1117; display: flex; gap: 10px; border-top: 1px solid #30363d; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
-        input { background: #161b22; border: 1px solid #30363d; color: white; flex: 1; padding: 12px; font-family: inherit; outline: none; border-radius: 5px; }
+        #input-area { 
+            padding: 15px; 
+            background: #0d1117; 
+            display: flex; 
+            gap: 10px; 
+            border-top: 1px solid #30363d; 
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+        }
+        input { 
+            background: #161b22; 
+            border: 1px solid #30363d; 
+            color: white; 
+            flex: 1; 
+            padding: 12px; 
+            font-family: inherit; 
+            outline: none; 
+            border-radius: 5px;
+            font-size: 16px;
+        }
         button { background: none; border: none; color: #00ff88; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 16px; }
 
-        /* LOGIN */
-        #login { position: fixed; inset: 0; background: #0d1117; z-index: 100; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px; }
+        /* LOGIN SCREEN */
+        #login { 
+            position: fixed; inset: 0; 
+            background: #0d1117; 
+            z-index: 100; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        .login-card { text-align: center; border: 1px solid #00ff88; padding: 40px; border-radius: 10px; background: #161b22; }
     </style>
 </head>
 <body>
 
 <div id="login">
-    <h3 style="color:#00ff88">// SECURE_ACCESS</h3>
-    <input type="text" id="u-in" placeholder="Nama" style="width:250px; flex:none;">
-    <input type="password" id="p-in" placeholder="PIN" style="width:250px; flex:none;">
-    <button onclick="auth()" style="border: 1px solid #00ff88; padding: 10px 30px; border-radius: 5px;">ENTER_SYSTEM</button>
+    <div class="login-card">
+        <h3 style="color:#00ff88; margin-top:0;">// SECURE_LOGIN</h3>
+        <input type="text" id="u-in" placeholder="Nama Kamu" style="width:200px; margin-bottom:10px;"><br>
+        <input type="password" id="p-in" placeholder="PIN Rahasia" style="width:200px;"><br>
+        <button onclick="auth()" style="border: 1px solid #00ff88; padding: 10px 30px; margin-top: 15px; border-radius: 5px;">ENTER</button>
+    </div>
 </div>
 
 <header>
-    <span>[CHATBESTIE]</span>
-    <button id="del-btn" onclick="resetDB()" style="display:none; color:#ff4444; background:none; border:none; font-family:inherit; cursor:pointer;">[PURGE_DB]</button>
+    <span>[CHATBESTIE_V4]</span>
+    <button id="del-btn" onclick="resetDB()" style="display:none; color:#ff4444; border:1px solid #ff4444; padding:2px 8px; border-radius:3px; background:none; cursor:pointer; font-family:inherit;">[HAPUS_SEMUA]</button>
     <span id="user-tag" style="color:#00ff88"></span>
 </header>
 
@@ -71,13 +126,14 @@
 </div>
 
 <div id="input-area">
-    <input type="text" id="msg-in" placeholder="Ketik pesan..." autocomplete="off">
+    <input type="text" id="msg-in" placeholder="Ketik pesan ghibah..." autocomplete="off">
     <button onclick="send()">SEND></button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
+    // Pastikan Firebase Config ini tetap benar
     const firebaseConfig = {
         apiKey: "AIzaSyDsnfwqmcAbe1vcEWEvgJth9GJWGKSecqk",
         authDomain: "chatbestie-44728.firebaseapp.com",
@@ -100,15 +156,20 @@
             localStorage.setItem("cb_user", n.trim());
             currentUser = n.trim();
             start();
-        } else { alert("ACCESS DENIED"); }
+        } else { alert("PIN SALAH ATAU NAMA KOSONG!"); }
     }
 
     function start() {
         document.getElementById('login').style.display = 'none';
         document.getElementById('user-tag').innerText = "@" + currentUser.toUpperCase();
-        if(currentUser.toLowerCase() === "fizkers") document.getElementById('del-btn').style.display = 'block';
         
-        // Load & Listen Messages
+        // Cek Admin untuk tombol Hapus (Ganti 'Hafiz' jika ingin nama lain)
+        const nameLow = currentUser.toLowerCase();
+        if(nameLow === "fizkers" || nameLow === "hafiz") { 
+            document.getElementById('del-btn').style.display = 'inline-block';
+        }
+        
+        // Tampilkan Pesan
         db.ref("messages").on("value", snapshot => {
             const box = document.getElementById('chat-box');
             box.innerHTML = "";
@@ -118,16 +179,10 @@
                 const line = document.createElement('div');
                 line.className = `msg-line ${isMe ? 'right' : 'left'}`;
                 
-                line.innerHTML = isMe ? `
+                line.innerHTML = `
                     <div class="content">
                         <span class="time">[${data.jam}]</span>
-                        <span class="sender">Kamu:</span>
-                        <span>${data.message}</span>
-                    </div>
-                ` : `
-                    <div class="content">
-                        <span class="time">[${data.jam}]</span>
-                        <span class="sender">${data.sender}:</span>
+                        <span class="sender">${isMe ? 'Kamu' : data.sender}:</span>
                         <span>${data.message}</span>
                     </div>
                 `;
@@ -136,7 +191,7 @@
             box.scrollTop = box.scrollHeight;
         });
 
-        // Auto-Clean 7 days
+        // Pembersihan otomatis 7 hari
         const limit = Date.now() - (7 * 24 * 60 * 60 * 1000);
         db.ref("messages").once("value", s => {
             s.forEach(c => { if((c.val().timestamp || 0) < limit) c.ref.remove(); });
@@ -156,14 +211,19 @@
                 sender: currentUser,
                 message: input.value,
                 timestamp: Date.now(),
-                jam: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                jam: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12: true})
             });
             input.value = "";
         }
     }
 
+    function resetDB() {
+        if(confirm("PERINGATAN: Hapus semua riwayat chat secara permanen?")) {
+            db.ref("messages").remove();
+        }
+    }
+
     document.getElementById("msg-in").addEventListener("keypress", e => { if(e.key === "Enter") send(); });
-    function resetDB() { if(confirm("Hapus semua pesan?")) db.ref("messages").remove(); }
 </script>
 </body>
 </html>
