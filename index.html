@@ -3,239 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChatBestie Premium</title>
+    <title>ChatBestie</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00ff88;
-            --bg: #0d1117;
-            --card: rgba(22, 27, 34, 0.95);
-            --text: #c9d1d9;
-        }
-
         body { 
-            background: radial-gradient(circle at center, #161b22 0%, #0d1117 100%);
-            color: var(--text);
-            font-family: 'Fira Code', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            touch-action: manipulation;
+            background-color: #0d1117; 
+            color: #c9d1d9; 
+            font-family: 'Fira Code', monospace; 
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; height: 100vh;
         }
 
-        #name-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 99; display: flex; justify-content: center; align-items: center; 
-        }
+        header { padding: 10px; border-bottom: 1px solid #30363d; font-size: 10px; display: flex; justify-content: space-between; }
 
-        .glass-card {
-            background: var(--card);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            width: 85%;
-            max-width: 350px;
-        }
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
 
-        .modern-input {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #30363d;
-            border-radius: 5px;
-            color: var(--primary);
-            padding: 12px;
-            width: 100%;
-            margin: 20px 0;
-            outline: none;
-            box-sizing: border-box;
-            text-align: center;
-            font-size: 16px;
-        }
+        /* FIX POSISI SESUAI FOTO */
+        .msg-line { display: flex; width: 100%; }
+        
+        /* Pesan Teman (Kiri) */
+        .left { justify-content: flex-start; }
+        .left .content { border-left: 2px solid #00ff88; padding-left: 10px; }
 
-        #chat-container {
-            width: 100%;
-            height: 100%;
-            background: var(--card);
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        /* Pesan Kamu (Kanan) */
+        .right { justify-content: flex-end; text-align: right; }
+        .right .content { border-right: 2px solid #00ff88; padding-right: 10px; }
 
-        @media (min-width: 768px) {
-            #chat-container {
-                width: 95%;
-                max-width: 800px;
-                height: 85vh;
-                border-radius: 12px;
-                border: 1px solid #30363d;
-            }
-        }
+        .time { color: #00ff88; font-size: 0.8em; }
+        .sender { font-weight: bold; color: #fff; margin: 0 5px; }
 
-        #chat-header {
-            padding: 15px 20px;
-            background: rgba(0,0,0,0.3);
-            border-bottom: 1px solid #30363d;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
+        /* EMOJI BAR */
+        #emoji-row { padding: 8px 15px; background: #161b22; border-top: 1px solid #30363d; display: flex; gap: 15px; }
+        .emoji-item { cursor: pointer; font-size: 20px; }
 
-        #chat-box { 
-            flex: 1; 
-            padding: 15px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column;
-            -webkit-overflow-scrolling: touch;
-        }
+        /* INPUT AREA */
+        #input-area { padding: 15px; background: #0d1117; display: flex; gap: 10px; border-top: 1px solid #30363d; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
+        input { background: #161b22; border: 1px solid #30363d; color: white; flex: 1; padding: 12px; font-family: inherit; outline: none; border-radius: 5px; }
+        button { background: none; border: none; color: #00ff88; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 16px; }
 
-        .message {
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-left: 3px solid var(--primary);
-            font-size: 14px;
-            word-break: break-word;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        #input-area { 
-            padding: 15px; 
-            background: rgba(0,0,0,0.4); 
-            padding-bottom: calc(15px + env(safe-area-inset-bottom));
-        }
-
-        .input-wrapper {
-            display: flex;
-            background: #0d1117;
-            padding: 5px 15px;
-            border-radius: 25px;
-            border: 1px solid #30363d;
-            align-items: center;
-        }
-
-        #input-area input {
-            background: none; 
-            border: none; 
-            color: white;
-            flex: 1; 
-            padding: 10px 5px; 
-            outline: none;
-            font-family: inherit;
-            font-size: 16px;
-        }
-
-        .glow-button {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .time { color: var(--primary); font-size: 0.75em; opacity: 0.7; margin-right: 5px; }
+        /* LOGIN */
+        #login { position: fixed; inset: 0; background: #0d1117; z-index: 100; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px; }
     </style>
 </head>
 <body>
-    <div id="name-overlay">
-        <div class="glass-card">
-            <h3>// INITIALIZE</h3>
-            <p style="font-size: 12px;">Masukkan nama untuk login:</p>
-            <input type="text" id="usernameInput" class="modern-input" placeholder="Nama..." autofocus>
-            <button onclick="saveName()" class="glow-button">ENTER_SYSTEM</button>
-        </div>
-    </div>
 
-    <div id="chat-container">
-        <div id="chat-header">
-            <span>CHATBESTIE_V2.0</span>
-            <span style="color: var(--primary);">● ONLINE</span>
-        </div>
-        <div id="chat-box"></div>
-        <div id="input-area">
-            <div class="input-wrapper">
-                <span id="current-user" style="color: var(--primary); font-size: 12px; margin-right: 5px; white-space: nowrap;"></span>
-                <input type="text" id="messageInput" placeholder="Ketik pesan..." autocomplete="off">
-                <button onclick="sendMessage()" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:20px; padding: 5px;">➤</button>
-            </div>
-        </div>
-    </div>
+<div id="login">
+    <h3 style="color:#00ff88">// SECURE_ACCESS</h3>
+    <input type="text" id="u-in" placeholder="Nama" style="width:250px; flex:none;">
+    <input type="password" id="p-in" placeholder="PIN" style="width:250px; flex:none;">
+    <button onclick="auth()" style="border: 1px solid #00ff88; padding: 10px 30px; border-radius: 5px;">ENTER_SYSTEM</button>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDsnfwqmcAbe1vcEWEvgJth9GJWGKSecqk",
-            authDomain: "chatbestie-44728.firebaseapp.com",
-            databaseURL: "https://chatbestie-44728-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "chatbestie-44728",
-            storageBucket: "chatbestie-44728.firebasestorage.app",
-            messagingSenderId: "764625669025",
-            appId: "1:764625669025:web:1312271b63b748c5d9d9e0"
-        };
+<header>
+    <span>[CHATBESTIE]</span>
+    <button id="del-btn" onclick="resetDB()" style="display:none; color:#ff4444; background:none; border:none; font-family:inherit; cursor:pointer;">[PURGE_DB]</button>
+    <span id="user-tag" style="color:#00ff88"></span>
+</header>
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+<div id="chat-box"></div>
 
-        let myName = localStorage.getItem("chatbestie_user");
-        if (myName) { jalankanAplikasi(); }
+<div id="emoji-row">
+    <span class="emoji-item" onclick="addE('😂')">😂</span>
+    <span class="emoji-item" onclick="addE('🤫')">🤫</span>
+    <span class="emoji-item" onclick="addE('🙄')">🙄</span>
+    <span class="emoji-item" onclick="addE('❤️')">❤️</span>
+    <span class="emoji-item" onclick="addE('🗿')">🗿</span>
+</div>
 
-        function saveName() {
-            const input = document.getElementById("usernameInput").value;
-            if (input.trim() !== "") {
-                localStorage.setItem("chatbestie_user", input.trim());
-                myName = input.trim();
-                jalankanAplikasi();
-            }
-        }
+<div id="input-area">
+    <input type="text" id="msg-in" placeholder="Ketik pesan..." autocomplete="off">
+    <button onclick="send()">SEND></button>
+</div>
 
-        function jalankanAplikasi() {
-            document.getElementById("name-overlay").style.display = "none";
-            document.getElementById("chat-container").style.display = "flex";
-            document.getElementById("current-user").innerText = myName + ">";
-        }
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDsnfwqmcAbe1vcEWEvgJth9GJWGKSecqk",
+        authDomain: "chatbestie-44728.firebaseapp.com",
+        databaseURL: "https://chatbestie-44728-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "chatbestie-44728",
+        storageBucket: "chatbestie-44728.firebasestorage.app",
+        messagingSenderId: "764625669025",
+        appId: "1:764625669025:web:1312271b63b748c5d9d9e0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        function sendMessage() {
-            const msgInput = document.getElementById("messageInput");
-            if (msgInput.value.trim() !== "") {
-                database.ref("messages").push().set({
-                    sender: myName,
-                    message: msgInput.value,
-                    jam: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-                });
-                msgInput.value = "";
-                msgInput.focus();
-            }
-        }
+    let currentUser = localStorage.getItem("cb_user");
+    if(currentUser) start();
 
-        database.ref("messages").on("value", (snapshot) => {
-            const chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML = ""; 
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                const msgDiv = document.createElement("div");
-                msgDiv.className = "message";
-                msgDiv.innerHTML = `<span class="time">[${data.jam}]</span> <strong>${data.sender}</strong>: ${data.message}`;
-                chatBox.appendChild(msgDiv);
+    function auth() {
+        const n = document.getElementById('u-in').value;
+        const p = document.getElementById('p-in').value;
+        if(p === "TanyoeBersama" && n.trim() !== "") {
+            localStorage.setItem("cb_user", n.trim());
+            currentUser = n.trim();
+            start();
+        } else { alert("ACCESS DENIED"); }
+    }
+
+    function start() {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('user-tag').innerText = "@" + currentUser.toUpperCase();
+        if(currentUser.toLowerCase() === "fizkers") document.getElementById('del-btn').style.display = 'block';
+        
+        // Load & Listen Messages
+        db.ref("messages").on("value", snapshot => {
+            const box = document.getElementById('chat-box');
+            box.innerHTML = "";
+            snapshot.forEach(child => {
+                const data = child.val();
+                const isMe = data.sender.toLowerCase() === currentUser.toLowerCase();
+                const line = document.createElement('div');
+                line.className = `msg-line ${isMe ? 'right' : 'left'}`;
+                
+                line.innerHTML = isMe ? `
+                    <div class="content">
+                        <span class="time">[${data.jam}]</span>
+                        <span class="sender">Kamu:</span>
+                        <span>${data.message}</span>
+                    </div>
+                ` : `
+                    <div class="content">
+                        <span class="time">[${data.jam}]</span>
+                        <span class="sender">${data.sender}:</span>
+                        <span>${data.message}</span>
+                    </div>
+                `;
+                box.appendChild(line);
             });
-            chatBox.scrollTop = chatBox.scrollHeight;
+            box.scrollTop = box.scrollHeight;
         });
 
-        document.getElementById("messageInput").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") sendMessage();
+        // Auto-Clean 7 days
+        const limit = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        db.ref("messages").once("value", s => {
+            s.forEach(c => { if((c.val().timestamp || 0) < limit) c.ref.remove(); });
         });
-    </script>
+    }
+
+    function addE(e) { 
+        const input = document.getElementById('msg-in');
+        input.value += e;
+        input.focus();
+    }
+
+    function send() {
+        const input = document.getElementById('msg-in');
+        if(input.value.trim() !== "" && currentUser) {
+            db.ref("messages").push().set({
+                sender: currentUser,
+                message: input.value,
+                timestamp: Date.now(),
+                jam: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            });
+            input.value = "";
+        }
+    }
+
+    document.getElementById("msg-in").addEventListener("keypress", e => { if(e.key === "Enter") send(); });
+    function resetDB() { if(confirm("Hapus semua pesan?")) db.ref("messages").remove(); }
+</script>
 </body>
 </html>
